@@ -54,16 +54,22 @@ int main(void)
     }
 
     // 6. Цикл с перемещением текста (анимация)
+    SSD1306_Clear();
     while (1)
     {
         unsigned char page;
         for (page = 0; page < 8; page++)
         {
-            SSD1306_Clear();
+            if (page > 0)
+            {
+                SSD1306_SetCursor(8, page - 1);
+                SSD1306_WriteString("       ");
+            }
             SSD1306_SetCursor(8, page);
             SSD1306_WriteString("Moving!");
+            delay(300);
         }
+        SSD1306_SetCursor(8, 7);
+        SSD1306_WriteString("       ");
     }
-
-    return 0;
 }
