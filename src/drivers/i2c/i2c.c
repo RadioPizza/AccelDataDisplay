@@ -1,102 +1,72 @@
+/* i2c.c */
 #include "i2c.h"
 
 void I2C_Init(void)
 {
-    // Устанавливаем частоту периферийной шины в МГц (предполагается 16 МГц)
-    I2C_FREQR = 16; // Частота тактирования периферии 16 МГц
+    /* Включаем тактирование периферии I2C */
+    CLK_PCKENR1 |= 0x02; // Бит 1 соответствует I2C в PCKENR1
 
-    // Настраиваем скорость I2C (делитель частоты для получения 100 кГц)
-    // CCR = F_master / (2 * F_SCL)
-    // Для F_master = 16 МГц и F_SCL = 100 кГц: CCR = 80
-    I2C_CCRL = 0x50; // 80 в десятичной системе
-    I2C_CCRH = 0x00; // Биты 15-12 остаются 0 для стандартного режима
+    /* Настраиваем частоту I2C */
+    I2C_FREQR = 16; // Предполагаемая частота тактирования 16МГц
 
-    // Устанавливаем максимальное время нарастания сигнала (Trise)
-    // Trise = (F_master / 1МГц) + 1
-    // Trise = 16 + 1 = 17
+    /* Настраиваем регистры контроля тактирования для 100кГц */
+    I2C_CCRL = 0x50; // Стандартный режим, 100кГц
+    I2C_CCRH = 0x00;
+
+    /* Максимальное время нарастания */
     I2C_TRISER = 17;
 
-    // Включаем подтверждение ACK
-    I2C_CR2 |= (1 << 2); // Устанавливаем бит ACK
+    /* Настраиваем регистры управления I2C */
+    I2C_CR1 = 0x00;         // Сбрасываем регистр управления 1
+    I2C_CR2 |= I2C_CR2_ACK; // Устанавливаем бит ACK в регистре CR2
 
-    // Включаем периферийный модуль I2C
-    I2C_CR1 |= (1 << 0); // Устанавливаем бит PE
+    /* Устанавливаем собственный адрес (не используется в режиме мастера) */
+    I2C_OARL = 0x00;
+    I2C_OARH = 0x00; // В 7-битном режиме адресации бит ADDMODE должен быть сброшен
+
+    /* Включаем периферию I2C */
+    I2C_CR1 |= I2C_CR1_PE; // Устанавливаем бит PE для включения I2C
 }
 
 void I2C_Start(void)
 {
-    I2C_CR2 |= (1 << 0); // Устанавливаем бит START
-    // Ждем установки бита SB (Start Bit) в I2C_SR1
-    while (!(I2C_SR1 & (1 << 0)))
-        ;
+    I2C_CR2 |= I2C_CR2_START; // Генерируем условие START
+    while (!(I2C_SR1 & I2C_SR1_SB))
+        ; // Ждем установки флага SB (Start Bit)
 }
 
 void I2C_Stop(void)
 {
-    I2C_CR2 |= (1 << 1); // Устанавливаем бит STOP
+    I2C_CR2 |= I2C_CR2_STOP; // Генерируем условие STOP
 }
 
-void I2C_SendAddress(unsigned char address, unsigned char direction)
+void I2C_WriteAddress(unsigned char address)
 {
-    // Объявляем все локальные переменные в начале функции
-    unsigned char addr;
-    unsigned char temp;
-
-    // Формируем адрес с учетом режима (0 - запись, 1 - чтение)
-    addr = (address << 1) | (direction & 0x01);
-    I2C_DR = addr;
-
-    // Ждем установки бита ADDR (Address Sent) в I2C_SR1
-    while (!(I2C_SR1 & (1 << 1)))
-        ;
-
-    // Сбрасываем флаг ADDR чтением регистра состояния I2C_SR3
-    temp = I2C_SR3;
-    (void)temp; // Избегаем предупреждения о неиспользуемой переменной
+    I2C_DR = address; // Отправляем адрес
+    while (!(I2C_SR1 & I2C_SR1_ADDR))
+        ;          // Ждем установки флага ADDR
+    (void)I2C_SR3; // Читаем SR3 для сброса флага ADDR
 }
 
-void I2C_SendByte(unsigned char data)
+void I2C_WriteData(unsigned char data)
 {
-    I2C_DR = data; // Записываем данные в регистр данных
-    // Ждем установки бита TXE (Data Register Empty) в I2C_SR1
-    while (!(I2C_SR1 & (1 << 7)))
-        ;
+    I2C_DR = data; // Отправляем данные
+    while (!(I2C_SR1 & I2C_SR1_TXE))
+        ; // Ждем, пока TXE (регистр данных пуст)
 }
 
-unsigned char I2C_ReadByte(unsigned char ack)
+unsigned char I2C_ReadData_ACK(void)
 {
-    if (ack)
-    {
-        I2C_CR2 |= (1 << 2); // Включаем ACK
-    }
-    else
-    {
-        I2C_CR2 &= ~(1 << 2); // Выключаем ACK
-    }
-    // Ждем установки бита RXNE (Data Register Not Empty) в I2C_SR1
-    while (!(I2C_SR1 & (1 << 6)))
-        ;
-    return I2C_DR; // Читаем полученные данные
+    I2C_CR2 |= I2C_CR2_ACK; // Устанавливаем бит ACK
+    while (!(I2C_SR1 & I2C_SR1_RXNE))
+        ;          // Ждем установки флага RXNE
+    return I2C_DR; // Возвращаем полученные данные
 }
 
-void I2C_WriteRegister(unsigned char deviceAddress, unsigned char registerAddress, unsigned char data)
+unsigned char I2C_ReadData_NACK(void)
 {
-    I2C_Start();
-    I2C_SendAddress(deviceAddress, 0); // Адрес устройства с записью (0)
-    I2C_SendByte(registerAddress);     // Адрес регистра в устройстве
-    I2C_SendByte(data);                // Данные для записи
-    I2C_Stop();
-}
-
-unsigned char I2C_ReadRegister(unsigned char deviceAddress, unsigned char registerAddress)
-{
-    unsigned char data;
-    I2C_Start();
-    I2C_SendAddress(deviceAddress, 0); // Адрес устройства с записью (0)
-    I2C_SendByte(registerAddress);     // Адрес регистра в устройстве
-    I2C_Start();                       // Повторный старт
-    I2C_SendAddress(deviceAddress, 1); // Адрес устройства с чтением (1)
-    data = I2C_ReadByte(0);            // Читаем данные с NACK (0)
-    I2C_Stop();
-    return data;
+    I2C_CR2 &= ~I2C_CR2_ACK; // Сбрасываем бит ACK
+    while (!(I2C_SR1 & I2C_SR1_RXNE))
+        ;          // Ждем установки флага RXNE
+    return I2C_DR; // Возвращаем полученные данные
 }
