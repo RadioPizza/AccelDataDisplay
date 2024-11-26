@@ -1,0 +1,23 @@
+{
+    "configurations": [
+        {
+            "name": "COSMIC",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "${workspaceFolder}/src",
+                "${workspaceFolder}/src/drivers",
+                "${workspaceFolder}/src/drivers/ssd1306",
+                "${workspaceFolder}/src/drivers/i2c",
+                "C:/Program Files (x86)/STMicroelectronics/st_toolset/include"
+            ],
+            "defines": [
+                "__CSMC__" // Макрос для COSMIC Compiler
+            ],
+            "compilerPath": "C:/Program Files (x86)/COSMIC/FSE_Compilers/CXSTM8/cxstm8.exe", // Путь к COSMIC компилятору
+            "cStandard": "c89",   // COSMIC использует старые стандарты
+            "cppStandard": "c++03", // Обычно достаточно и c89
+            "intelliSenseMode": "gcc-x86" // COSMIC ближе к GCC по стилю
+        }
+    ],
+    "version": 4
+}

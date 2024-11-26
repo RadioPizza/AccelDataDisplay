@@ -1,0 +1,42 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "COSMIC Debug",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/main.elf", // Укажите путь к вашему ELF-файлу
+            "cwd": "${workspaceFolder}",
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Load symbols для GDB",
+                    "text": "file ${workspaceFolder}/build/main.elf",
+                    "ignoreFailures": true
+                },
+                {
+                    "description": "Загрузка прошивки в STM8",
+                    "text": "load",
+                    "ignoreFailures": true
+                },
+                {
+                    "description": "Run программ",
+                    "text": "monitor reset",
+                    "ignoreFailures": false
+                }
+            ],
+            "miDebuggerPath": "C:/path/to/gdb", // Укажите путь к вашему GDB (например, GDB для ARM или STM8)
+            "targetArchitecture": "stm8",
+            "linux": {
+                "MIMode": "gdb",
+                "miDebuggerPath": "/usr/bin/gdb"
+            },
+            "windows": {
+                "MIMode": "gdb",
+                
+                "miDebuggerPath": "C:/Program Files (x86)/COSMIC/FSE_Compilers/CXSTM8/gdb.exe" // Проверьте путь
+            }
+        }
+    ]
+}
+

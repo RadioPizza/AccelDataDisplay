@@ -1,0 +1,36 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Build Project with COSMIC",
+            "type": "shell",
+            "command": "C:/Program Files (x86)/COSMIC/FSE_Compilers/CXSTM8/cxstm8.exe",
+            "args": [
+                "-cl",
+                "-o", "${workspaceFolder}/build/main.ihx",
+                "${workspaceFolder}/src/main.c",
+                "-i", "${workspaceFolder}/src/drivers",
+                "-i", "${workspaceFolder}/src/drivers/ssd1306",
+                "-i", "${workspaceFolder}/src/drivers/i2c",
+                "-i", "C:/Program Files (x86)/STMicroelectronics/st_toolset/include",
+                "-d", "__CSMC__"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": {
+                "fileLocation": ["relative", "${workspaceFolder}"],
+                "pattern": {
+                    "regexp": "^(.+):(\\d+):(\\d+):\\s+(error|warning):\\s+(.*)$",
+                    "file": 1,
+                    "line": 2,
+                    "column": 3,
+                    "severity": 4,
+                    "message": 5
+                }
+            },
+            "detail": "Building project with COSMIC Compiler for STM8S"
+        }
+    ]
+}
