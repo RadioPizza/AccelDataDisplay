@@ -1,5 +1,5 @@
 /** @file delay.h
- *  @brief Функция для создания задержек.
+ *  @brief Функция для создания задержек
  */
 
 #ifndef DELAY_H
@@ -10,16 +10,16 @@
 #ifdef __cplusplus
 extern "C"
 {
-    #endif
+#endif
 
-        /**
-         * @brief Задержка на указанное количество миллисекунд.
-         *
-         * @param ms Количество миллисекунд задержки.
-         */
-        void delay(uint32_t ms);
+    /**
+     * @brief Задержка на указанное количество миллисекунд
+     *
+     * @param ms Количество миллисекунд задержки
+     */
+    void delay(uint32_t ms);
 
-    #ifdef __cplusplus
+#ifdef __cplusplus
 }
 #endif
 

@@ -1,6 +1,6 @@
 /**
- * @file i2c.h
- * @brief Работа с I2C на микроконтроллере STM8S103
+ * @file i2c.с
+ * @brief Реализация функций для работы с I2C на микроконтроллерах STM8S103xxxx
  */
 
 #include "i2c.h"
@@ -66,27 +66,27 @@ void I2C_Stop(void)
     I2C_CR2 |= I2C_CR2_STOP;            // Генерируем условие STOP
 }
 
-void I2C_WriteAddress(unsigned char address)
+void I2C_WriteAddress(uint8_t address)
 {
     I2C_DR = address;                   // Отправляем адрес
     while (!(I2C_SR1 & I2C_SR1_ADDR));  // Ждем установки флага ADDR
     (void)I2C_SR3;                      // Читаем SR3 для сброса флага ADDR
 }
 
-void I2C_WriteData(unsigned char data)
+void I2C_WriteData(uint8_t data)
 {
     I2C_DR = data;                      // Отправляем данные
     while (!(I2C_SR1 & I2C_SR1_TXE));   // Ждем, пока TXE (регистр данных пуст)
 }
 
-unsigned char I2C_ReadData_ACK(void)
+uint8_t I2C_ReadData_ACK(void)
 {
     I2C_CR2 |= I2C_CR2_ACK;             // Устанавливаем бит ACK
     while (!(I2C_SR1 & I2C_SR1_RXNE));  // Ждем установки флага RXNE
     return I2C_DR;                      // Возвращаем полученные данные
 }
 
-unsigned char I2C_ReadData_NACK(void)
+uint8_t I2C_ReadData_NACK(void)
 {
     I2C_CR2 &= ~I2C_CR2_ACK;            // Сбрасываем бит ACK
     while (!(I2C_SR1 & I2C_SR1_RXNE));  // Ждем установки флага RXNE

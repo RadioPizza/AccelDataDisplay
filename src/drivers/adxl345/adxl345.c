@@ -1,6 +1,6 @@
 /**
  * @file adxl345.c
- * @brief Реализация функций для работы с акселерометром ADXL345 по SPI.
+ * @brief Реализация функций для работы с акселерометром ADXL345 по SPI
  */
 
 #include "adxl345.h"
@@ -8,15 +8,9 @@
 #include "iostm8s103.h"
 
 /* Макросы для управления линией CS (Chip Select) */
-#define ADXL345_CS_LOW()   (PA_ODR &= ~(1 << 3))   /**< Установить линию CS в низкий уровень */
-#define ADXL345_CS_HIGH()  (PA_ODR |=  (1 << 3))   /**< Установить линию CS в высокий уровень */
+#define ADXL345_CS_LOW() (PA_ODR &= ~(1 << 3)) /**< Установить линию CS в низкий уровень */
+#define ADXL345_CS_HIGH() (PA_ODR |= (1 << 3)) /**< Установить линию CS в высокий уровень */
 
-/**
- * @brief Инициализация акселерометра ADXL345.
- *
- * Функция инициализирует ADXL345 путем настройки необходимых регистров.
- * Она устанавливает частоту данных, диапазон и настройки энергопотребления.
- */
 void ADXL345_Init(void)
 {
     /* Проверка идентификатора устройства */
@@ -43,7 +37,7 @@ void ADXL345_Init(void)
     ADXL345_WriteReg(ADXL345_REG_POWER_CTL, 0x08);
 }
 
-void ADXL345_ReadAccel(int16_t* x, int16_t* y, int16_t* z)
+void ADXL345_ReadAccel(int16_t *x, int16_t *y, int16_t *z)
 {
     uint8_t buffer[6];
 
@@ -58,10 +52,10 @@ void ADXL345_ReadAccel(int16_t* x, int16_t* y, int16_t* z)
 
 void ADXL345_WriteReg(uint8_t regAddr, uint8_t data)
 {
-    ADXL345_CS_LOW();  /* Активируем устройство путем опускания CS */
+    ADXL345_CS_LOW(); /* Активируем устройство путем опускания CS */
 
     /* Отправляем адрес регистра с установленным битом записи (бит RW = 0) */
-    SPI_TransmitByte(regAddr & 0x3F);  /* Обеспечиваем, что биты RW и MB установлены в 0 */
+    SPI_TransmitByte(regAddr & 0x3F); /* Обеспечиваем, что биты RW и MB установлены в 0 */
 
     /* Отправляем данные */
     SPI_TransmitByte(data);
@@ -73,10 +67,10 @@ uint8_t ADXL345_ReadReg(uint8_t regAddr)
 {
     uint8_t data;
 
-    ADXL345_CS_LOW();  /* Активируем устройство */
+    ADXL345_CS_LOW(); /* Активируем устройство */
 
     /* Отправляем адрес регистра с установленным битом чтения (бит RW = 1) */
-    SPI_TransmitByte(0x80 | (regAddr & 0x3F));  /* Устанавливаем бит RW в 1 для чтения */
+    SPI_TransmitByte(0x80 | (regAddr & 0x3F)); /* Устанавливаем бит RW в 1 для чтения */
 
     /* Читаем данные */
     data = SPI_ReceiveByte();
@@ -86,11 +80,11 @@ uint8_t ADXL345_ReadReg(uint8_t regAddr)
     return data;
 }
 
-void ADXL345_ReadMultBytes(uint8_t startRegAddr, uint8_t* buffer, uint8_t length)
+void ADXL345_ReadMultBytes(uint8_t startRegAddr, uint8_t *buffer, uint8_t length)
 {
     uint8_t i;
 
-    ADXL345_CS_LOW();  /* Активируем устройство */
+    ADXL345_CS_LOW(); /* Активируем устройство */
 
     /* Отправляем адрес регистра с установленными битами чтения и многобайтной передачи (RW = 1, MB = 1) */
     SPI_ReadWriteByte(0xC0 | (startRegAddr & 0x3F));

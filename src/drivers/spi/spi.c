@@ -1,7 +1,6 @@
 /**
  * @file spi.c
- * @brief Работа с SPI для STM8S103F3.
- *
+ * @brief Реализация функций для работы с SPI на микроконтроллерах STM8S103xxxx
  */
 
 #include "spi.h"
@@ -54,13 +53,15 @@ void SPI_Init(void)
 uint8_t SPI_ReadWriteByte(uint8_t data)
 {
     /* Ожидание, пока буфер передачи не станет пустым */
-    while (!(SPI_SR & SPI_SR_TXE));
+    while (!(SPI_SR & SPI_SR_TXE))
+        ;
 
     /* Запись данных в регистр данных SPI */
     SPI_DR = data;
 
     /* Ожидание завершения приёма данных */
-    while (!(SPI_SR & SPI_SR_RXNE));
+    while (!(SPI_SR & SPI_SR_RXNE))
+        ;
 
     /* Чтение и возврат принятых данных */
     return SPI_DR;
