@@ -17,7 +17,7 @@ uint8_t ADXL345_Init(void)
     uint8_t deviceId = ADXL345_ReadReg(ADXL345_REG_DEVID);
     if (deviceId != ADXL345_DEVICE_ID)
     {
-        return 0; /**< Ошибка инициализации: неправильный идентификатор устройства */
+        return 1; /**< Ошибка инициализации: неправильный идентификатор устройства */
     }
 
     /* Установка диапазона измерений и формата данных */
@@ -34,7 +34,7 @@ uint8_t ADXL345_Init(void)
     /* Устанавливаем бит Measure в регистре POWER_CTL */
     ADXL345_WriteReg(ADXL345_REG_POWER_CTL, 0x08);
 
-    return 1; // Успешная инициализация
+    return 0; // Успешная инициализация
 }
 
 void ADXL345_ReadAccel(int16_t *x, int16_t *y, int16_t *z)
