@@ -6,7 +6,7 @@
 #include "spi.h"
 #include "iostm8s103.h"
 
-void SPI_Init(void)
+uint8_t SPI_Init(void)
 {
     /* Включение тактирования для периферии SPI */
     CLK_PCKENR1 |= (1 << 1); /* Регистр включения тактирования периферии, Bit1 отвечает за SPI */
@@ -48,6 +48,13 @@ void SPI_Init(void)
 
     /* Включение SPI */
     SPI_CR1 |= SPI_CR1_SPE;
+
+    /* Проверка успешности инициализации */
+    if ((SPI_CR1 & SPI_CR1_SPE) == SPI_CR1_SPE) {
+        return 0; /* Успешная инициализация */
+    } else {
+        return 1; /* Ошибка инициализации */
+    }
 }
 
 uint8_t SPI_ReadWriteByte(uint8_t data)
