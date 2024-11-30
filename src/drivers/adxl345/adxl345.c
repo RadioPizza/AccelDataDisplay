@@ -55,10 +55,10 @@ void ADXL345_WriteReg(uint8_t regAddr, uint8_t data)
     ADXL345_CS_LOW(); /* Активируем устройство путем опускания CS */
 
     /* Отправляем адрес регистра с установленным битом записи (бит RW = 0) */
-    SPI_TransmitByte(regAddr & 0x3F); /* Обеспечиваем, что биты RW и MB установлены в 0 */
+    SPI_ReadWriteByte(regAddr & 0x3F); /* Обеспечиваем, что биты RW и MB установлены в 0 */
 
     /* Отправляем данные */
-    SPI_TransmitByte(data);
+    SPI_ReadWriteByte(data);
 
     ADXL345_CS_HIGH(); /* Деактивируем устройство путем поднятия CS */
 }
@@ -70,10 +70,10 @@ uint8_t ADXL345_ReadReg(uint8_t regAddr)
     ADXL345_CS_LOW(); /* Активируем устройство */
 
     /* Отправляем адрес регистра с установленным битом чтения (бит RW = 1) */
-    SPI_TransmitByte(0x80 | (regAddr & 0x3F)); /* Устанавливаем бит RW в 1 для чтения */
+    SPI_ReadWriteByte(0x80 | (regAddr & 0x3F)); /* Устанавливаем бит RW в 1 для чтения */
 
     /* Читаем данные */
-    data = SPI_ReceiveByte();
+    data = SPI_ReadWriteByte(0x00); // Отправляем dummy byte для чтения данных
 
     ADXL345_CS_HIGH(); /* Деактивируем устройство */
 
