@@ -11,15 +11,13 @@
 #define ADXL345_CS_LOW() (PA_ODR &= ~(1 << 3)) /**< Установить линию CS в низкий уровень */
 #define ADXL345_CS_HIGH() (PA_ODR |= (1 << 3)) /**< Установить линию CS в высокий уровень */
 
-void ADXL345_Init(void)
+uint8_t ADXL345_Init(void)
 {
     /* Проверка идентификатора устройства */
     uint8_t deviceId = ADXL345_ReadReg(ADXL345_REG_DEVID);
     if (deviceId != ADXL345_DEVICE_ID)
     {
-        /* Обработка ошибки: неправильный идентификатор устройства */
-        /* Можно добавить обработку ошибки или вернуть ошибку */
-        return;
+        return 0; /**< Ошибка инициализации: неправильный идентификатор устройства */
     }
 
     /* Установка диапазона измерений и формата данных */
@@ -35,6 +33,8 @@ void ADXL345_Init(void)
     /* Включение измерений */
     /* Устанавливаем бит Measure в регистре POWER_CTL */
     ADXL345_WriteReg(ADXL345_REG_POWER_CTL, 0x08);
+
+    return 1; // Успешная инициализация
 }
 
 void ADXL345_ReadAccel(int16_t *x, int16_t *y, int16_t *z)
