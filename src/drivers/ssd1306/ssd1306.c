@@ -27,8 +27,6 @@ void SSD1306_WriteData(uint8_t data)
 
 void SSD1306_Init(void)
 {
-    I2C_Init(I2C_FAST_MODE);
-
     // Последовательность инициализации для SSD1306
     SSD1306_WriteCommand(0xAE); // Выключить дисплей
 
