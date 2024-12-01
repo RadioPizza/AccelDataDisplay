@@ -56,7 +56,7 @@ uint8_t init(void)
     // Завершение инициализации
     SSD1306_SetCursor(0, 4);
     SSD1306_WriteString("> All Init OK!");
-    delay(10000); // Задержка для отображения сообщения
+    delay(2000); // Задержка для отображения сообщения
     SSD1306_Clear();
 
     return 0; // Успешная инициализация
@@ -86,6 +86,37 @@ void print_titles(void)
 }
 
 /**
+ * @brief Выводит на OLED-дисплей значения системного времени, ускорений по осям X, Y, Z, углов крена и тангажа.
+ *
+ * @param time_str Строка, содержащая системное время в формате "ЧЧ:ММ:СС".
+ * @param ax_str Строка, содержащая значение ускорения по оси X.
+ * @param ay_str Строка, содержащая значение ускорения по оси Y.
+ * @param az_str Строка, содержащая значение ускорения по оси Z.
+ * @param roll_str Строка, содержащая значение угла крена.
+ * @param pitch_str Строка, содержащая значение угла тангажа.
+ */
+void display_data(const char *time_str, const char *ax_str, const char *ay_str, const char *az_str, const char *roll_str, const char *pitch_str)
+{
+    SSD1306_SetCursor(75, 0);
+    SSD1306_WriteString(time_str);
+
+    SSD1306_SetCursor(40, 1);
+    SSD1306_WriteString(ax_str);
+
+    SSD1306_SetCursor(40, 2);
+    SSD1306_WriteString(ay_str);
+
+    SSD1306_SetCursor(40, 3);
+    SSD1306_WriteString(az_str);
+
+    SSD1306_SetCursor(40, 4);
+    SSD1306_WriteString(roll_str);
+
+    SSD1306_SetCursor(40, 5);
+    SSD1306_WriteString(pitch_str);
+}
+
+/**
  * @brief Точка входа в программу
  */
 void main(void)
@@ -107,5 +138,6 @@ void main(void)
     while (1)
     {
         // Здесь будет основной функционал программы
+        display_data("12:34:56", "1.23", "4.56", "7.89", "10.1", "20.2"); // проверка с выводом фиксированных значений
     }
 }
