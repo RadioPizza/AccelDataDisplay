@@ -110,8 +110,8 @@ void SSD1306_DrawBitmap(int16_t x, int16_t y, const uint8_t *bitmap, uint8_t wid
  *
  * @note Эта функция должна вызываться после SSD1306_DisplayOff() для возобновления отображения.
  */
-
 void SSD1306_DisplayOn(void);
+
 /**
  * @brief Выключает дисплей
  *
