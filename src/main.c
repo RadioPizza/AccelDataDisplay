@@ -9,10 +9,10 @@
  * @return 0 при успешной инициализации, 1 при ошибке
  */
 uint8_t init(void)
-{		
-		// Иницилизация I2С
-		if (I2C_Init(I2C_FAST_MODE) == 1) // Ошибка инициализации I2C
-				return 1;
+{
+    // Иницилизация I2С
+    if (I2C_Init(I2C_FAST_MODE) == 1) // Ошибка инициализации I2C
+        return 1;
 
     // Инициализация и очистка OLED-дисплея
     SSD1306_Init();
@@ -63,6 +63,29 @@ uint8_t init(void)
 }
 
 /**
+ * @brief Отрисовывает заголовки полей на OLED-дисплее.
+ *
+ * Функция очищает дисплей и выводит заголовки для отображения системного времени,
+ * ускорений по осям X, Y, Z и углов крена и тангажа.
+ */
+void print_titles(void)
+{
+    SSD1306_Clear();
+    SSD1306_SetCursor(0, 0);
+    SSD1306_WriteString("System time: ");
+    SSD1306_SetCursor(0, 1);
+    SSD1306_WriteString("a_X: ");
+    SSD1306_SetCursor(0, 2);
+    SSD1306_WriteString("a_Y: ");
+    SSD1306_SetCursor(0, 3);
+    SSD1306_WriteString("a_Z: ");
+    SSD1306_SetCursor(0, 4);
+    SSD1306_WriteString("Roll: ");
+    SSD1306_SetCursor(0, 5);
+    SSD1306_WriteString("Pitch: ");
+}
+
+/**
  * @brief Точка входа в программу
  */
 void main(void)
@@ -77,14 +100,12 @@ void main(void)
             ;
     }
 
+    // В начале отрисовываем названия полей
+    print_titles();
+
     // Основной цикл программы
     while (1)
     {
         // Здесь будет основной функционал программы
-        SSD1306_SetCursor(0, 0);
-        SSD1306_WriteString("> Running...");
-        delay(1000);
-        SSD1306_Clear();
-        delay(1000);
     }
 }
