@@ -6,7 +6,7 @@
 #include "i2c.h"
 #include "iostm8s103.h"
 
-void I2C_Init(I2C_Mode_t mode)
+uint8_t I2C_Init(I2C_Mode_t mode)
 {
     uint16_t CCR;
     uint8_t CCRL_Value;
@@ -53,6 +53,9 @@ void I2C_Init(I2C_Mode_t mode)
 
     /* Включаем периферию I2C */
     I2C_CR1 |= I2C_CR1_PE; // Устанавливаем бит PE для включения I2C
+    
+    /* Проверяем успешность инициализации */
+    return (I2C_CR1 & I2C_CR1_PE) ? 0 : 1;
 }
 
 void I2C_Start(void)

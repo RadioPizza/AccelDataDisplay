@@ -91,8 +91,11 @@ typedef enum
  * стандартном (100 кГц) или быстром (400 кГц).
  *
  * @param mode Режим работы I2C (I2C_STANDARD_MODE или I2C_FAST_MODE)
+ * @return uint8_t Статус инициализации
+ * @retval 0  Успешная инициализация I2C
+ * @retval 1  Ошибка инициализации I2C
  */
-void I2C_Init(I2C_Mode_t mode);
+uint8_t I2C_Init(I2C_Mode_t mode);
 
 /**
  * @brief Генерирует условие START на шине I2C
