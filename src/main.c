@@ -3,6 +3,7 @@
 #include "spi.h"
 #include "adxl345.h"
 #include "delay.h"
+#include "tim4.h"
 
 /**
  * @brief Инициализация всех периферийных устройств с выводом отладочной информации на OLED-дисплей.
@@ -52,6 +53,12 @@ uint8_t init(void)
         SSD1306_WriteString("> Check ADXL345!");
         return 1; // Ошибка ADXL345
     }
+
+    // Инициализация таймера
+    SSD1306_SetCursor(0, 3);
+    SSD1306_WriteString("> Init TIM4... ");
+    TIM4_Init();
+    SSD1306_WriteString("OK");
 
     // Завершение инициализации
     SSD1306_SetCursor(0, 4);
@@ -121,6 +128,8 @@ void display_data(const char *time_str, const char *ax_str, const char *ay_str, 
  */
 void main(void)
 {
+    char timeStr[9];
+
     // Вызов функции инициализации
     uint8_t init_status = init();
 
@@ -137,7 +146,8 @@ void main(void)
     // Основной цикл программы
     while (1)
     {
-        // Здесь будет основной функционал программы
-        display_data("12:34:56", "1.23", "4.56", "7.89", "10.1", "20.2"); // проверка с выводом фиксированных значений
+        TIM4_GetTimeString(timeStr);
+        display_data(timeStr, "1.23", "4.56", "7.89", "10.1", "20.2");
+        delay(100); // Обновление 10 раз в секунду
     }
 }
