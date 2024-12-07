@@ -9,6 +9,13 @@
 /** @brief Время ожидания записи в мс */
 #define M24512_WRITE_TIMEOUT 5
 
+/**
+ * @brief Инициализация M24512
+ * 
+ * @return uint8_t Результат инициализации:
+ *         - 0: успешно
+ *         - 1: ошибка
+ */
 uint8_t M24512_Init(void)
 {
     /* Проверка связи с микросхемой */
@@ -19,6 +26,15 @@ uint8_t M24512_Init(void)
     return 0;
 }
 
+/**
+ * @brief Запись байта данных по указанному адресу
+ * 
+ * @param[in] addr Адрес для записи (0x0000 - 0xFFFF)
+ * @param[in] data Байт данных для записи
+ * @return uint8_t Результат операции:
+ *         - 0: успешно
+ *         - 1: ошибка
+ */
 uint8_t M24512_WriteByte(uint16_t addr, uint8_t data)
 {
     if(addr > M24512_MAX_ADDR)
@@ -48,6 +64,15 @@ uint8_t M24512_WriteByte(uint16_t addr, uint8_t data)
     return 0;
 }
 
+/**
+ * @brief Чтение байта данных с указанного адреса
+ * 
+ * @param[in] addr Адрес для чтения (0x0000 - 0xFFFF)
+ * @param[out] data Указатель на переменную для сохранения прочитанного байта
+ * @return uint8_t Результат операции:
+ *         - 0: успешно
+ *         - 1: ошибка
+ */
 uint8_t M24512_ReadByte(uint16_t addr, uint8_t* data)
 {
     if(addr > M24512_MAX_ADDR || data == 0)
@@ -71,38 +96,3 @@ uint8_t M24512_ReadByte(uint16_t addr, uint8_t* data)
     
     return 0;
 }
-
-uint8_t M24512_WriteBytes(uint16_t addr, uint8_t* data, uint16_t len)
-{
-    uint16_t i;
-    uint8_t current_page;
-    uint8_t bytes_to_write;
-    
-    if(addr > M24512_MAX_ADDR || data == 0)
-        return 1;
-        
-    for(i = 0; i < len;) {
-        current_page = M24512_PAGE_SIZE - (addr % M24512_PAGE_SIZE);
-        bytes_to_write = (len - i) > current_page ? current_page : (len - i);
-        
-        /* Начало передачи */
-        I2C_Start();
-        I2C_WriteAddress(M24512_BASE_ADDR);
-        I2C_WriteData((uint8_t)(addr >> 8));
-        I2C_WriteData((uint8_t)(addr & 0xFF));
-        
-        /* Записываем данные постранично */
-        while(bytes_to_write--) {
-            I2C_WriteData(data[i++]);
-            addr++;
-        }
-        
-        I2C_Stop();
-        delay(M24512_WRITE_TIMEOUT);
-    }
-    
-    return 0;
-}
-
-uint8_t M24512_ReadBytes(uint16_t addr, uint8_t* data, uint16_t len)
-{

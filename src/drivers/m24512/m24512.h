@@ -14,9 +14,6 @@
 /** @brief Базовый адрес устройства M24512 на шине I2C */
 #define M24512_BASE_ADDR    0xA0
 
-/** @brief Размер страницы записи в байтах */
-#define M24512_PAGE_SIZE    128
-
 /** @brief Максимальный адрес памяти */
 #define M24512_MAX_ADDR     0xFFFF
 
@@ -50,29 +47,5 @@ uint8_t M24512_WriteByte(uint16_t addr, uint8_t data);
  *         - 1: ошибка
  */
 uint8_t M24512_ReadByte(uint16_t addr, uint8_t* data);
-
-/**
- * @brief Запись последовательности байтов начиная с указанного адреса
- * 
- * @param[in] addr Начальный адрес для записи
- * @param[in] data Указатель на массив данных
- * @param[in] len Количество байт для записи
- * @return uint8_t Результат операции:
- *         - 0: успешно
- *         - 1: ошибка
- */
-uint8_t M24512_WriteBytes(uint16_t addr, uint8_t* data, uint16_t len);
-
-/**
- * @brief Чтение последовательности байтов начиная с указанного адреса
- * 
- * @param[in] addr Начальный адрес для чтения
- * @param[out] data Указатель на буфер для сохранения данных
- * @param[in] len Количество байт для чтения
- * @return uint8_t Результат операции:
- *         - 0: успешно
- *         - 1: ошибка
- */
-uint8_t M24512_ReadBytes(uint16_t addr, uint8_t* data, uint16_t len);
 
 #endif /* M24512_H */
