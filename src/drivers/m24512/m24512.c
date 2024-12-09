@@ -5,93 +5,93 @@
 
 #include "m24512.h"
 #include "i2c.h"
+#include "delay.h"
 
-/** @brief Время ожидания записи в мс */
+/** @brief Время ожидания завершения записи в мс */
 #define M24512_WRITE_TIMEOUT 5
 
 /**
- * @brief Инициализация M24512
+ * @brief Проверка занятости устройства
  * 
- * @return uint8_t Результат инициализации:
- *         - 0: успешно
- *         - 1: ошибка
+ * @return Результат проверки
+ * @retval 0 Устройство готово к работе
+ * @retval 1 Устройство занято
  */
-uint8_t M24512_Init(void)
+static uint8_t M24512_IsBusy(void)
 {
-    /* Проверка связи с микросхемой */
     I2C_Start();
     I2C_WriteAddress(M24512_BASE_ADDR);
     I2C_Stop();
-    
     return 0;
 }
 
 /**
- * @brief Запись байта данных по указанному адресу
+ * @brief Ожидание готовности устройства
  * 
- * @param[in] addr Адрес для записи (0x0000 - 0xFFFF)
- * @param[in] data Байт данных для записи
- * @return uint8_t Результат операции:
- *         - 0: успешно
- *         - 1: ошибка
+ * @return Результат ожидания
+ * @retval 0 Устройство готово к работе
+ * @retval 1 Таймаут ожидания готовности
  */
+static uint8_t M24512_WaitReady(void)
+{
+    uint8_t timeout = 100; /* Максимальное время ожидания ~500 мс */
+    
+    while(M24512_IsBusy() && timeout) {
+        delay(5);
+        timeout--;
+    }
+    
+    return (timeout == 0);
+}
+
+uint8_t M24512_Init(void)
+{
+    I2C_Start();
+    I2C_WriteAddress(M24512_BASE_ADDR);
+    I2C_Stop();
+    return 0;
+}
+
 uint8_t M24512_WriteByte(uint16_t addr, uint8_t data)
 {
-    if(addr > M24512_MAX_ADDR)
+    if(addr > M24512_MAX_ADDR) {
         return 1;
-        
-    /* Начало передачи */
+    }
+    
+    if(M24512_WaitReady()) {
+        return 1;
+    }
+    
     I2C_Start();
-    
-    /* Отправка адреса устройства */
     I2C_WriteAddress(M24512_BASE_ADDR);
-    
-    /* Отправка старшего байта адреса памяти */
     I2C_WriteData((uint8_t)(addr >> 8));
-    
-    /* Отправка младшего байта адреса памяти */
     I2C_WriteData((uint8_t)(addr & 0xFF));
-    
-    /* Отправка данных */
     I2C_WriteData(data);
-    
-    /* Завершение передачи */
     I2C_Stop();
     
-    /* Ожидание завершения записи */
     delay(M24512_WRITE_TIMEOUT);
     
     return 0;
 }
 
-/**
- * @brief Чтение байта данных с указанного адреса
- * 
- * @param[in] addr Адрес для чтения (0x0000 - 0xFFFF)
- * @param[out] data Указатель на переменную для сохранения прочитанного байта
- * @return uint8_t Результат операции:
- *         - 0: успешно
- *         - 1: ошибка
- */
 uint8_t M24512_ReadByte(uint16_t addr, uint8_t* data)
 {
-    if(addr > M24512_MAX_ADDR || data == 0)
+    if(addr > M24512_MAX_ADDR || data == 0) {
         return 1;
-        
-    /* Установка адреса чтения */
+    }
+    
+    if(M24512_WaitReady()) {
+        return 1;
+    }
+    
     I2C_Start();
     I2C_WriteAddress(M24512_BASE_ADDR);
     I2C_WriteData((uint8_t)(addr >> 8));
     I2C_WriteData((uint8_t)(addr & 0xFF));
     
-    /* Повторный старт для чтения */
     I2C_Start();
     I2C_WriteAddress(M24512_BASE_ADDR | 0x01);
-    
-    /* Чтение данных */
     *data = I2C_ReadData_NACK();
-    
-    /* Завершение передачи */
     I2C_Stop();
     
     return 0;
