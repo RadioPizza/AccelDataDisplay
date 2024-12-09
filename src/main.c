@@ -48,6 +48,9 @@ float calculate_pitch(int16_t x, int16_t y, int16_t z)
  */
 uint8_t init(void)
 {
+    uint8_t test_data = 0x55; // Тестовый байт данных
+    uint8_t read_data;        // Буфер для чтения
+
     // Иницилизация I2С
     if (I2C_Init(I2C_FAST_MODE) == 1) // Ошибка инициализации I2C
         return 1;
@@ -73,7 +76,7 @@ uint8_t init(void)
         SSD1306_WriteString("ERR");
         SSD1306_SetCursor(0, 2);
         SSD1306_WriteString("> Check SPI!");
-        return 1; // Ошибка SPI
+        return 1;
     }
 
     // Проверка ADXL345
@@ -88,22 +91,50 @@ uint8_t init(void)
         SSD1306_WriteString("ERROR");
         SSD1306_SetCursor(0, 3);
         SSD1306_WriteString("> Check ADXL345!");
-        return 1; // Ошибка ADXL345
+        return 1;
     }
 
-    // Инициализация таймера
+    // Проверка EEPROM
     SSD1306_SetCursor(0, 3);
+    SSD1306_WriteString("> Init EEPROM... ");
+    
+    if (M24512_Init() != 0) {
+        SSD1306_WriteString("ERR");
+        SSD1306_SetCursor(0, 4);
+        SSD1306_WriteString("> Check EEPROM!");
+        return 1;
+    }
+
+    // Тест записи/чтения EEPROM
+    if (M24512_WriteByte(0x0000, test_data) != 0) {
+        SSD1306_WriteString("ERR");
+        SSD1306_SetCursor(0, 4);
+        SSD1306_WriteString("> EEPROM Write Err!");
+        return 1;
+    }
+
+    if (M24512_ReadByte(0x0000, &read_data) != 0 || read_data != test_data) {
+        SSD1306_WriteString("ERR");
+        SSD1306_SetCursor(0, 4);
+        SSD1306_WriteString("> EEPROM Read Err!");
+        return 1;
+    }
+
+    SSD1306_WriteString("OK");
+
+    // Инициализация таймера
+    SSD1306_SetCursor(0, 4);
     SSD1306_WriteString("> Init TIM4... ");
     TIM4_Init();
     SSD1306_WriteString("OK");
 
     // Завершение инициализации
-    SSD1306_SetCursor(0, 4);
+    SSD1306_SetCursor(0, 5);
     SSD1306_WriteString("> All Init OK!");
     delay(2000); // Задержка для отображения сообщения
     SSD1306_Clear();
 
-    return 0; // Успешная инициализация
+    return 0;
 }
 
 /**
