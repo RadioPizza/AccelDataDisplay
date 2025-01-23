@@ -6,6 +6,7 @@
 #include "ssd1306.h"
 #include "i2c.h"
 #include "font5x7.h"
+#include "my_str.h"
 
 void SSD1306_WriteCommand(uint8_t command)
 {
@@ -123,6 +124,13 @@ void SSD1306_WriteString(const char *str)
     {
         SSD1306_WriteChar(*str++);
     }
+}
+
+void SSD1306_WriteInt(int32_t num)
+{
+    char buffer[12]; 							// Буфер для строки
+    int_to_str(num, buffer); 			// Преобразуем число в строку
+    SSD1306_WriteString(buffer); 	// Выводим строку на дисплей
 }
 
 void SSD1306_DisplayOn(void)
