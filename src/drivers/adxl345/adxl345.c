@@ -5,7 +5,7 @@
 
 #include "adxl345.h"
 #include "spi.h"
-#include "iostm8s103.h"
+#include "my_iostm8s103.h"
 
 /* Макросы для управления линией CS (Chip Select) */
 #define ADXL345_CS_LOW() (PA_ODR &= ~(1 << 3)) /**< Установить линию CS в низкий уровень */

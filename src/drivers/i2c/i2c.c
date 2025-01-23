@@ -4,7 +4,7 @@
  */
 
 #include "i2c.h"
-#include "iostm8s103.h"
+#include "my_iostm8s103.h"
 
 uint8_t I2C_Init(I2C_Mode_t mode)
 {

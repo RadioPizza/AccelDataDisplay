@@ -4,7 +4,7 @@
  */
 
 #include "spi.h"
-#include "iostm8s103.h"
+#include "my_iostm8s103.h"
 
 uint8_t SPI_Init(void)
 {

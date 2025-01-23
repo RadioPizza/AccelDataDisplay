@@ -3,7 +3,7 @@
  */
 
 #include "tim4.h"
-#include "iostm8s103.h"
+#include "my_iostm8s103.h"
 
 /** @brief Счетчик миллисекунд */
 static volatile uint32_t milliseconds = 0;
@@ -40,9 +40,9 @@ uint32_t TIM4_GetMillis(void)
     uint32_t ms;
     
     /* Отключаем прерывания для атомарного чтения */
-    __asm__("sim");
+    _asm("sim");
     ms = milliseconds;
-    __asm__("rim");
+    _asm("rim");
     
     return ms;
 }
@@ -76,8 +76,7 @@ void TIM4_GetTimeString(char* timeStr)
  * 
  * Вызывается каждую миллисекунду, инкрементирует счетчик миллисекунд
  */
-void TIM4_UPD_OVF_IRQHandler(void) __interrupt(23)
-{
+@interrupt void TIM4_UPD_OVF_IRQHandler(void) {
     /* Инкремент счетчика миллисекунд */
     milliseconds++;
     

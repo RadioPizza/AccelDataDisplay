@@ -4,7 +4,8 @@
 #include "adxl345.h"
 #include "delay.h"
 #include "tim4.h"
-#include <math.h>
+#include "math.h"
+#include "m24512.h"
 
 #define RAD_TO_DEG 57.29577951308232 // Коэффициент для перевода радиан в градусы
 
@@ -22,7 +23,7 @@
 float calculate_roll(int16_t x, int16_t y, int16_t z)
 {
     // Используем atan2 для обработки всех квадрантов
-    return atan2f((float)y, sqrt((float)x * x + (float)z * z)) * RAD_TO_DEG;
+     return atan2((double)y, sqrt((double)x * x + (double)z * z)) * RAD_TO_DEG;
 }
 
 /**
@@ -39,7 +40,7 @@ float calculate_roll(int16_t x, int16_t y, int16_t z)
 float calculate_pitch(int16_t x, int16_t y, int16_t z)
 {
     // Используем atan2 для обработки всех квадрантов
-    return atan2f(-(float)x, sqrtf((float)y * y + (float)z * z)) * RAD_TO_DEG;
+    return atan2(-(double)x, sqrt((double)y * y + (double)z * z)) * RAD_TO_DEG;
 }
 
 /**
