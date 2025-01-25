@@ -7,46 +7,6 @@
 #include "eeprom.h"
 #include "my_iostm8s103.h"
 
-#define RAD_TO_DEG 57.29577951308232 // Коэффициент для перевода радиан в градусы
-
-/**
-* @brief Вычисление угла крена (вращение вокруг оси X)
-*
-* Функция вычисляет угол крена в градусах на основе данных
-ускорения.
-*
-* @param x Данные ускорения по оси X
-* @param y Данные ускорения по оси Y
-* @param z Данные ускорения по оси Z
-* @return Угол крена в градусах
-*/
-/*
-float calculate_roll(int16_t x, int16_t y, int16_t z)
-{
-    // Используем atan2 для обработки всех квадрантов
-     return atan2((double)y, sqrt((double)x * x + (double)z * z)) * RAD_TO_DEG;
-}
-*/
-
-/**
-/*
-* @brief Вычисление угла тангажа (вращение вокруг оси Y)
-*
-* Функция вычисляет угол тангажа в градусах на основе данных
-ускорения.
-*
-* @param x Данные ускорения по оси X
-* @param y Данные ускорения по оси Y
-* @param z Данные ускорения по оси Z
-* @return Угол тангажа в градусах
-*/
-/*
-float calculate_pitch(int16_t x, int16_t y, int16_t z)
-{
-    // Используем atan2 для обработки всех квадрантов
-    return atan2(-(double)x, sqrt((double)y * y + (double)z * z)) * RAD_TO_DEG;
-}
-*/
 /**
  * @brief Инициализация всех периферийных устройств с выводом отладочной информации на OLED-дисплей.
  * @return 0 при успешной инициализации, 1 при ошибке
@@ -200,7 +160,7 @@ void display_data(const char *time_str, const char *ax_str, const char *ay_str, 
  * @brief Точка входа в программу
  */
 void main(void)
-{   
+{
     // Статус инициализации
     uint8_t init_status = 1;
 

@@ -1,6 +1,7 @@
 {
     "files.associations": {
         "ssd1306.h": "c",
-        "stdio.h": "c"
+        "stdio.h": "c",
+        "my_math.h": "c"
     }
 }
