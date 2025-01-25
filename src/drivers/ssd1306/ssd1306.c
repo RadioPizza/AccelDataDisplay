@@ -128,9 +128,9 @@ void SSD1306_WriteString(const char *str)
 
 void SSD1306_WriteInt(int32_t num)
 {
-    char buffer[12]; 							// Буфер для строки
-    int_to_str(num, buffer); 			// Преобразуем число в строку
-    SSD1306_WriteString(buffer); 	// Выводим строку на дисплей
+    char buffer[12];             // Буфер для строки
+    int_to_str(num, buffer);     // Преобразуем число в строку
+    SSD1306_WriteString(buffer); // Выводим строку на дисплей
 }
 
 void SSD1306_DisplayOn(void)

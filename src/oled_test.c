@@ -6,7 +6,7 @@
  * а также пример простейшей анимации.
  */
 
-#include <stdint.h>  /* Для типов uint8_t и т.д. */
+#include <stdint.h> /* Для типов uint8_t и т.д. */
 #include "i2c.h"
 #include "ssd1306.h"
 #include "smile_bitmap.h"
@@ -14,9 +14,9 @@
 
 /**
  * @brief Функция для тестирования OLED дисплея (SSD1306)
- * 
+ *
  * Выполняет демонстрацию работы с дисплеем и простой анимацией.
- * 
+ *
  * @warning содержит бесконечный цикл
  */
 void oled_test(void)
@@ -26,9 +26,9 @@ void oled_test(void)
     /**
      * @section Initialization Инициализация дисплея
      */
-    I2C_Init(I2C_FAST_MODE);    /**< Инициализация I2C */
-    SSD1306_Init();             /**< Запуск и настройка SSD1306 */
-    SSD1306_DisplayOn();        /**< Включаем дисплей */
+    I2C_Init(I2C_FAST_MODE); /**< Инициализация I2C */
+    SSD1306_Init();          /**< Запуск и настройка SSD1306 */
+    SSD1306_DisplayOn();     /**< Включаем дисплей */
 
     /**
      * @section Clearing Очистка дисплея
