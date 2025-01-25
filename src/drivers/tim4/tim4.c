@@ -1,50 +1,50 @@
-/** @file tim4.c
- *  @brief Реализация функций для работы с таймером TIM4
- */
-
 #include "tim4.h"
 #include "my_iostm8s103.h"
+#include <stdint.h>
 
-/** @brief Счетчик миллисекунд */
-static volatile uint32_t milliseconds = 0;
+volatile uint32_t time_ms = 0;
+
+void TIM4_Init(void);
+uint32_t TIM4_GetMillis(void);
+uint32_t TIM4_GetSeconds(void);
+void TIM4_GetTimeString(char* timeStr);
+
+@far @interrupt void TIM4_UPD_OVF_IRQHandler(void)
+{
+    time_ms++;
+    TIM4_SR = 0;  // Сброс флага прерывания
+}
 
 void TIM4_Init(void)
 {
-    /* Остановка таймера */
-    TIM4_CR1 = 0x00;
-    
-    /* Настройка предделителя на 128 */
-    TIM4_PSCR = 0x07;
-    
-    /* Настройка периода для получения прерывания каждую миллисекунду
-     * При частоте МК 16 МГц, предделителе 128:
-     * 16000000 / 128 = 125000 Гц
-     * Для частоты 1 кГц нужен период 125 */
-    TIM4_ARR = 124; /* 125-1, так как счет начинается с 0 */
-    
-    /* Сброс счетчика */
-    TIM4_CNTR = 0x00;
-    
-    /* Очистка флага прерывания */
-    TIM4_SR = 0x00;
-    
-    /* Разрешение прерывания по переполнению */
-    TIM4_IER = 0x01;
-    
-    /* Запуск таймера */
-    TIM4_CR1 = 0x01;
+_asm("rim"); // Глобальное разрешение прерываний
+
+
+/* Остановка таймера */
+TIM4_CR1 = 0x00;
+
+/* Настройка предделителя на 32 */
+TIM4_PSCR = 0x05;
+
+/* Настройка периода для получения прерывания каждую миллисекунду */
+TIM4_ARR = 61;
+
+/* Сброс счетчика */
+TIM4_CNTR = 0x00;
+
+/* Очистка флага прерывания */
+TIM4_SR = 0x00;
+
+/* Разрешение прерывания по переполнению */
+TIM4_IER = 0x01;
+
+/* Запуск таймера */
+TIM4_CR1 = 0x01;
 }
 
 uint32_t TIM4_GetMillis(void)
 {
-    uint32_t ms;
-    
-    /* Отключаем прерывания для атомарного чтения */
-    _asm("sim");
-    ms = milliseconds;
-    _asm("rim");
-    
-    return ms;
+    return time_ms;
 }
 
 uint32_t TIM4_GetSeconds(void)
@@ -69,17 +69,4 @@ void TIM4_GetTimeString(char* timeStr)
     timeStr[6] = '0' + (seconds / 10);
     timeStr[7] = '0' + (seconds % 10);
     timeStr[8] = '\0';
-}
-
-/**
- * @brief Обработчик прерывания таймера TIM4
- * 
- * Вызывается каждую миллисекунду, инкрементирует счетчик миллисекунд
- */
-@interrupt void TIM4_UPD_OVF_IRQHandler(void) {
-    /* Инкремент счетчика миллисекунд */
-    milliseconds++;
-    
-    /* Сброс флага прерывания */
-    TIM4_SR = 0x00;
 }

@@ -4,8 +4,8 @@
 #include "adxl345.h"
 #include "delay.h"
 #include "tim4.h"
-#include "math.h"
-#include "m24512.h"
+#include "eeprom.h"
+#include "my_iostm8s103.h"
 
 #define RAD_TO_DEG 57.29577951308232 // Коэффициент для перевода радиан в градусы
 
@@ -20,13 +20,16 @@
 * @param z Данные ускорения по оси Z
 * @return Угол крена в градусах
 */
+/*
 float calculate_roll(int16_t x, int16_t y, int16_t z)
 {
     // Используем atan2 для обработки всех квадрантов
      return atan2((double)y, sqrt((double)x * x + (double)z * z)) * RAD_TO_DEG;
 }
+*/
 
 /**
+/*
 * @brief Вычисление угла тангажа (вращение вокруг оси Y)
 *
 * Функция вычисляет угол тангажа в градусах на основе данных
@@ -37,12 +40,13 @@ float calculate_roll(int16_t x, int16_t y, int16_t z)
 * @param z Данные ускорения по оси Z
 * @return Угол тангажа в градусах
 */
+/*
 float calculate_pitch(int16_t x, int16_t y, int16_t z)
 {
     // Используем atan2 для обработки всех квадрантов
     return atan2(-(double)x, sqrt((double)y * y + (double)z * z)) * RAD_TO_DEG;
 }
-
+*/
 /**
  * @brief Инициализация всех периферийных устройств с выводом отладочной информации на OLED-дисплей.
  * @return 0 при успешной инициализации, 1 при ошибке
@@ -64,65 +68,65 @@ uint8_t init(void)
     SSD1306_SetCursor(0, 0);
     SSD1306_WriteString("> Init OLED... ");
     SSD1306_WriteString("OK");
-
-    // Проверка SPI
-    SSD1306_SetCursor(0, 1);
-    SSD1306_WriteString("> Init SPI... ");
-    if (SPI_Init() == 0) // Успешная инициализация SPI
-    {
-        SSD1306_WriteString("OK");
-    }
-    else
-    {
-        SSD1306_WriteString("ERR");
-        SSD1306_SetCursor(0, 2);
-        SSD1306_WriteString("> Check SPI!");
-        return 1;
-    }
-
-    // Проверка ADXL345
-    SSD1306_SetCursor(0, 2);
-    SSD1306_WriteString("> Init ADXL345... ");
-    if (ADXL345_Init() == 1) // Успешная инициализация ADXL345
-    {
-        SSD1306_WriteString("OK");
-    }
-    else
-    {
-        SSD1306_WriteString("ERROR");
-        SSD1306_SetCursor(0, 3);
-        SSD1306_WriteString("> Check ADXL345!");
-        return 1;
-    }
-
-    // Проверка EEPROM
-    SSD1306_SetCursor(0, 3);
-    SSD1306_WriteString("> Init EEPROM... ");
-    
-    if (M24512_Init() != 0) {
-        SSD1306_WriteString("ERR");
-        SSD1306_SetCursor(0, 4);
-        SSD1306_WriteString("> Check EEPROM!");
-        return 1;
-    }
-
-    // Тест записи/чтения EEPROM
-    if (M24512_WriteByte(0x0000, test_data) != 0) {
-        SSD1306_WriteString("ERR");
-        SSD1306_SetCursor(0, 4);
-        SSD1306_WriteString("> EEPROM Write Err!");
-        return 1;
-    }
-
-    if (M24512_ReadByte(0x0000, &read_data) != 0 || read_data != test_data) {
-        SSD1306_WriteString("ERR");
-        SSD1306_SetCursor(0, 4);
-        SSD1306_WriteString("> EEPROM Read Err!");
-        return 1;
-    }
-
+    /*
+// Проверка SPI
+SSD1306_SetCursor(0, 1);
+SSD1306_WriteString("> Init SPI... ");
+if (SPI_Init() == 0) // Успешная инициализация SPI
+{
     SSD1306_WriteString("OK");
+}
+else
+{
+    SSD1306_WriteString("ERR");
+    SSD1306_SetCursor(0, 2);
+    SSD1306_WriteString("> Check SPI!");
+    return 1;
+}
 
+// Проверка ADXL345
+SSD1306_SetCursor(0, 2);
+SSD1306_WriteString("> Init ADXL345... ");
+if (ADXL345_Init() == 1) // Успешная инициализация ADXL345
+{
+    SSD1306_WriteString("OK");
+}
+else
+{
+    SSD1306_WriteString("ERROR");
+    SSD1306_SetCursor(0, 3);
+    SSD1306_WriteString("> Check ADXL345!");
+    return 1;
+}
+
+// Проверка EEPROM
+SSD1306_SetCursor(0, 3);
+SSD1306_WriteString("> Init EEPROM... ");
+
+if (M24512_Init() != 0) {
+    SSD1306_WriteString("ERR");
+    SSD1306_SetCursor(0, 4);
+    SSD1306_WriteString("> Check EEPROM!");
+    return 1;
+}
+
+// Тест записи/чтения EEPROM
+if (M24512_WriteByte(0x0000, test_data) != 0) {
+    SSD1306_WriteString("ERR");
+    SSD1306_SetCursor(0, 4);
+    SSD1306_WriteString("> EEPROM Write Err!");
+    return 1;
+}
+
+if (M24512_ReadByte(0x0000, &read_data) != 0 || read_data != test_data) {
+    SSD1306_WriteString("ERR");
+    SSD1306_SetCursor(0, 4);
+    SSD1306_WriteString("> EEPROM Read Err!");
+    return 1;
+}
+
+SSD1306_WriteString("OK");
+    */
     // Инициализация таймера
     SSD1306_SetCursor(0, 4);
     SSD1306_WriteString("> Init TIM4... ");
@@ -196,11 +200,15 @@ void display_data(const char *time_str, const char *ax_str, const char *ay_str, 
  * @brief Точка входа в программу
  */
 void main(void)
-{
+{   
+    // Статус инициализации
+    uint8_t init_status = 1;
+
+    // Строка для хранения текущего времени
     char timeStr[9];
 
     // Вызов функции инициализации
-    uint8_t init_status = init();
+    init_status = init();
 
     // Если инициализация завершилась с ошибкой, остановить выполнение
     if (init_status != 0)
@@ -209,14 +217,14 @@ void main(void)
             ;
     }
 
-    // В начале отрисовываем названия полей
+    // Предварительная отрисовка названий полей
     print_titles();
 
     // Основной цикл программы
     while (1)
     {
         TIM4_GetTimeString(timeStr);
-        display_data(timeStr, "1.23", "4.56", "7.89", "10.1", "20.2");
+        display_data(timeStr, "0.0 g", "1.2 g", "-2.3 g", "0 DEG", "27.1 DEG");
         delay(100); // Обновление 10 раз в секунду
     }
 }
