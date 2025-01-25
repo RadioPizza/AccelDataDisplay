@@ -113,15 +113,15 @@ void print_titles(void)
     SSD1306_Clear();
     SSD1306_SetCursor(0, 0);
     SSD1306_WriteString("System time: ");
-    SSD1306_SetCursor(0, 1);
-    SSD1306_WriteString("a_X: ");
     SSD1306_SetCursor(0, 2);
-    SSD1306_WriteString("a_Y: ");
+    SSD1306_WriteString("a_X: ");
     SSD1306_SetCursor(0, 3);
-    SSD1306_WriteString("a_Z: ");
+    SSD1306_WriteString("a_Y: ");
     SSD1306_SetCursor(0, 4);
-    SSD1306_WriteString("Roll: ");
+    SSD1306_WriteString("a_Z: ");
     SSD1306_SetCursor(0, 5);
+    SSD1306_WriteString("Roll: ");
+    SSD1306_SetCursor(0, 6);
     SSD1306_WriteString("Pitch: ");
 }
 
@@ -137,23 +137,34 @@ void print_titles(void)
  */
 void display_data(const char *time_str, const char *ax_str, const char *ay_str, const char *az_str, const char *roll_str, const char *pitch_str)
 {
-    SSD1306_SetCursor(75, 0);
+    // Вывод значений с единицами измерения
+    SSD1306_SetCursor(80, 0);
     SSD1306_WriteString(time_str);
 
-    SSD1306_SetCursor(40, 1);
+    SSD1306_SetCursor(42, 2);
     SSD1306_WriteString(ax_str);
+    SSD1306_SetCursor(75, 2);
+    SSD1306_WriteString("g");
 
-    SSD1306_SetCursor(40, 2);
+    SSD1306_SetCursor(42, 3);
     SSD1306_WriteString(ay_str);
+    SSD1306_SetCursor(75, 3);
+    SSD1306_WriteString("g");
 
-    SSD1306_SetCursor(40, 3);
+    SSD1306_SetCursor(42, 4);
     SSD1306_WriteString(az_str);
+    SSD1306_SetCursor(75, 4);
+    SSD1306_WriteString("g");
 
-    SSD1306_SetCursor(40, 4);
+    SSD1306_SetCursor(42, 5);
     SSD1306_WriteString(roll_str);
+    SSD1306_SetCursor(75, 5);
+    SSD1306_WriteString("deg");
 
-    SSD1306_SetCursor(40, 5);
+    SSD1306_SetCursor(42, 6);
     SSD1306_WriteString(pitch_str);
+    SSD1306_SetCursor(75, 6);
+    SSD1306_WriteString("deg");
 }
 
 /**
